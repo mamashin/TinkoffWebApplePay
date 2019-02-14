@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}{% load fontawesome %}{% load staticfiles %}
+
+{% block title %}Сочи-Онлайн - Выбор способа оплаты{% endblock %}
+
+{% block mycss %}
+
+{% include "apple-pay.css" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-4 col-md-offset-1 center-align">
+    <table class="table">
+    <thead>
+        <td colspan="2"><h5><mark> Данные о платеже: </mark></h5></td>
+    </thead>
+    <tr>
+        <td>Сумма</td>
+        <td><strong>{{ sum }} руб</strong></td>
+    </tr>
+    <tr>
+        <td>Зачисление средств на договор</td>
+        <td><strong>N{{ dogovor }}</strong></td>
+    </tr>
+    <tr>
+        <td>Номер заказа</td>
+        <td><strong>{{ dogovor }}-{{ pay_id_time }}</strong></td>
+    </tr>
+    <tr>
+        <td>Телефон</td>
+        <td><strong>{{ phone }}</strong></td>
+    </tr>
+    </table>
+
+    <p>Если все верно, выберите способ оплаты:</p>
+
+    <table class="table table-borderless">
+         <tr>
+            <td >
+            <button type="submit" class="btn btn-primary sol-pay-button" id="tinkoff_card_button">
+                {% fontawesome_icon 'credit-card' color='white' %} Оплата картой
+            </button>
+            </td>
+        </tr>
+        <tr>
+          <td class="text-left">
+              <div class="apple-pay-btn" id="apple-pay-button">
+            </div>
+          </td>
+        </tr>
+    </table>
+</div>
+</div>
+{% endblock %}
+{% block myjs %}
+    <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var params = {
+            TerminalKey: "{{terminal_key}}",
+            Amount: {{ sum }} * 100,
+            OrderId: "{{ dogovor }}-{{ pay_id_time }}",
+            Description: {{ dogovor }},
+            DATA: "Email={{ email }}|Phone={{ phone }}|Name={{ fio }}|Dogovor={{ dogovor }}",
+            Frame: true
+        };
+        $( "#tinkoff_card_button" ).click(function() {
+            doPay(params);
+        });
+    })
+   </script>
+    <script type="text/javascript">
+        {% include "apple-pay.js" %}
+    </script>
+{% endblock %}
